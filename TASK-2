@@ -1,0 +1,64 @@
+# Import necessary libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load dataset
+data = pd.read_csv("test.csv")
+
+# Display basic dataset information
+print("First 5 rows of the dataset:\n", data.head(), "\n")
+print("Last 5 rows of the dataset:\n", data.tail(), "\n")
+print("Dataset Information:\n")
+data.info()
+print("\nDataset Statistics:\n", data.describe(), "\n")
+
+# Check for missing values and duplicates
+print("Missing values per column:\n", data.isnull().sum(), "\n")
+print("Number of duplicate rows:", data.duplicated().sum(), "\n")
+
+# Handle missing data
+data.dropna(subset=["Embarked"], inplace=True)  # Drop rows where 'Embarked' is missing
+data["Cabin"].fillna("Unknown", inplace=True)   # Fill missing 'Cabin' values with 'Unknown'
+data["Age"].fillna(data["Age"].mean(), inplace=True)  # Fill missing 'Age' values with the mean
+
+# Verify if missing values are handled
+print("Missing values after cleanup:\n", data.isnull().sum(), "\n")
+
+# Plotting functions to avoid repetition
+def plot_hist(data, column, title, xlabel, ylabel, figsize=(6, 3)):
+    """Plot a histogram with KDE for a given column."""
+    plt.figure(figsize=figsize)
+    sns.histplot(data[column], kde=True)
+    plt.title(title, fontsize=12)
+    plt.xlabel(xlabel, fontsize=10)
+    plt.ylabel(ylabel, fontsize=10)
+    plt.tight_layout()
+    plt.show()
+
+def plot_count(data, column, title, xlabel, ylabel, hue=None, figsize=(6, 3)):
+    """Plot a count plot for a given column, optionally with hue."""
+    plt.figure(figsize=figsize)
+    sns.countplot(data=data, x=column, hue=hue)
+    plt.title(title, fontsize=12)
+    plt.xlabel(xlabel, fontsize=10)
+    plt.ylabel(ylabel, fontsize=10)
+    plt.legend(title=hue, loc="upper right")
+    plt.tight_layout()
+    plt.show()
+
+def plot_scatter(data, x, y, hue, title, xlabel, ylabel, figsize=(6, 3)):
+    """Plot a scatter plot with hue."""
+    plt.figure(figsize=figsize)
+    sns.scatterplot(data=data, x=x, y=y, hue=hue, palette="viridis")
+    plt.title(title, fontsize=12)
+    plt.xlabel(xlabel, fontsize=10)
+    plt.ylabel(ylabel, fontsize=10)
+    plt.legend(title=hue)
+    plt.tight_layout()
+    plt.show()
+
+# Visualizations
+plot_hist(data, "Age", "Age Distribution", "Age", "Count")
+plot_count(data, "Sex", "Survival by Gender", "Gender", "Count", hue="Sex")
+plot_scatter(data, "Age", "Fare", "Age", "Scatter plot of Age and Fare", "Age", "Fare")
